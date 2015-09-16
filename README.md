@@ -32,7 +32,7 @@ Time spent: `15 hours`
 
 ### Walkthrough
 
-![Video Walkthrough](...)
+![Video Walkthrough](walkthrough4.gif)
 
 
 
