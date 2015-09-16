@@ -162,22 +162,27 @@ module.exports = (app) => {
     }))
 
     app.post('/share/:id', isLoggedIn, then(async(req, res) => {
-        let status = req.body.share;
-        let id = req.params.id;
-        if (status.length > 140){
-            req.flash('error', 'length cannot be greater than 140 characters')
+        try {
+            let status = req.body.share
+            console.log('status: ', status)
+            let id = req.params.id
+            if (status.length > 140){
+                req.flash('error', 'length cannot be greater than 140 characters')
+            }
+            if (status.length === 0){
+                req.flash('error', 'Status cannot be empty')
+            }
+            let twitterClient = new Twitter({
+                consumer_key: twitterConfig.consumerKey,
+                consumer_secret: twitterConfig.consumerSecret,
+                access_token_key: req.user.twitter.token,
+                access_token_secret: req.user.twitter.secret
+            })
+            await twitterClient.promise.post('/statuses/retweet/'+id, {status: status})
+            res.redirect('/timeline')
+        } catch (e) {
+            console.log(e)
         }
-        if (status.length === 0){
-            req.flash('error', 'Status cannot be empty')
-        }
-        let twitterClient = new Twitter({
-            consumer_key: twitterConfig.consumerKey,
-            consumer_secret: twitterConfig.consumerSecret,
-            access_token_key: req.user.twitter.token,
-            access_token_secret: req.user.twitter.secret
-        })
-        await twitterClient.promise.post('/statuses/retweet/'+id, {status});
-        res.redirect('/timeline')
     }))
 
 
